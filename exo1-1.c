@@ -2,6 +2,7 @@
 #include <GL/gl.h>	// OpenGL32 Library
 #include <GL/glu.h>	// GLu32 Library
 #include "stdio.h"
+#include <math.h>
 
 int window; 
 
@@ -9,13 +10,72 @@ int window;
 float rcx = 0.0f;
 float rcy = 0.0f;
 
+/* Variables de Camera */
+//Coordonnés de la caméra
+float x = 0.0f;
+float z = 5.0f;
+//Direction de la caméra
+float lx = 0.0f;
+float ly = 0.0f;
+float lz = -1.0f;
+//angle de la camera
+float anglex = 0.0f;
+float angley = 0.0f;
+//changement d'angle de la camera
+float deltaAnglex = 0.0f;
+float deltaAngley = 0.0f;
+int xOrigin = -1;
+int yOrigin = -1;
+
 
 
 void translate(GLfloat * vertices, int vertices_length, GLfloat * move ); 
-void mouse(int button,int state,int x,int y) ; //détecte qu'un bouton est appuyé
+void mouse(int button,int state,int x,int y) { //détecte qu'un bouton est appuyé
 
-void mousemotion(int x,int y) ; //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
-void keyboard(unsigned char touche,int x,int y) ;
+  if (button == GLUT_LEFT_BUTTON) {
+
+    if (state == GLUT_UP) {
+      anglex += deltaAnglex;
+      angley += deltaAngley;
+      xOrigin = -1;
+      yOrigin = -1;
+    }
+    else  {
+      xOrigin = x;
+      yOrigin = y;
+    }
+  }
+}
+
+void mousemotion(int x,int y){ //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
+  if (xOrigin >= 0) {
+    deltaAnglex = (x- xOrigin)*0.001f;
+/*
+    lx = -sin(anglex + deltaAnglex);
+    lz = -cos(anglex + deltaAnglex);*/
+    
+  }
+  if (yOrigin >=0) {
+
+    deltaAngley = (y - yOrigin)*0.001f;
+    /*
+    ly = sin(angley + deltaAngley);
+    lz = -cos(angley + deltaAngley);*/
+
+  }
+}
+
+
+
+void keyboard(unsigned char touche,int x,int y) {
+  switch (touche){
+    case 'q' :
+    case 'Q' :
+    case 27  : // Touche ESC
+      exit (0);
+      break;
+  }
+}
 
 /* fonction d'initialisation */
 void InitGL(int Width, int Height)
@@ -54,6 +114,50 @@ void DrawGLScene()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// on vide les buffers 
   glLoadIdentity();				// on initialise avec la matrice identité
 
+  float cosx = cos(anglex) ;
+  float cosy = cos(angley) ;
+  float sinx = sin(anglex) ;
+  float siny = sin(angley) ;
+
+  glMatrixMode(GL_MODELVIEW);
+  float cameracoord [] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f,    z,
+    0.0f, 0.0f, 0.0f, 1.0f,
+  };
+  float comeback [] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 1.0f,   -z,
+    0.0f, 0.0f, 0.0f, 1.0f,
+  };
+  float rotationY [] = {
+    cosx, 0.0f, sinx, 0.0f,
+    0.0f, 1.0f, 0.0f, 0.0f,
+    -sinx, 0.0f, cosx, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f,
+  };
+  float rotationX [] = {
+    1.0f, 0.0f, 0.0f, 0.0f,
+    0.0f, cosy, -siny, 0.0f,
+    0.0f, siny, cosy, 0.0f,
+    0.0f, 0.0f, 0.0f, 1.0f,
+  };
+
+  glMultMatrixf(cameracoord);
+  glMultMatrixf(rotationY);
+  glMultMatrixf(rotationX);
+  /*
+  glRotatef(anglex+deltaAnglex, lx, ly, lz);
+  glRotatef(angley+deltaAngley, lx, ly, lz);*/
+  glMultMatrixf(comeback);
+
+  // Set the camera
+/*  gluLookAt(  x, 1.0f, z,
+            x+lx, 1.0f+ly,  z+lz,
+            0.0f, 1.0f,  0.0f);
+*/
   glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
 	
   glRotatef(rcy,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
@@ -154,6 +258,9 @@ void translate(GLfloat vertices[], int vertices_length, GLfloat move[]){
 
 int main(int argc, char **argv) 
 { 
+
+  int width = 640;
+  int height = 480;
   /* initialisation de glut */
   glutInit(&argc, argv);  
 
@@ -165,7 +272,7 @@ int main(int argc, char **argv)
   glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_ALPHA | GLUT_DEPTH);  
 
   /* taille de la fenêtre 640 x 480 */
-  glutInitWindowSize(640, 480);  
+  glutInitWindowSize(width, height);  
 
   /* la fenêtre se positionne en haut à gauche */
   glutInitWindowPosition(0, 0);  
@@ -188,15 +295,19 @@ int main(int argc, char **argv)
      mouvement de la sourie => void glutMotionFunc(void (*fonct)(int x,int y));
   */
 
+  glutKeyboardFunc(keyboard); 
+  glutMouseFunc(mouse);
+  glutMotionFunc(mousemotion);
+
   /* en cas de redimensionnement */
   glutReshapeFunc(&ReSizeGLScene);
   
 
   /* on initialise la scène */
-  InitGL(640, 480);
+  InitGL(width, height);
   
   /* On lance la boucle de la gestion d'événements */  
-  glutMainLoop();  
+  glutMainLoop();
 
   return 1;
 }

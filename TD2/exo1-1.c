@@ -4,6 +4,11 @@
 
 int window; 
 
+
+float rcx = 0.0f;
+float rcy = 0.0f;
+float rcz = 0.0f;
+
 GLubyte indices[] = {0,1,2,3,
 		     1,5,6,2,
 		     5,4,7,6,
@@ -29,6 +34,31 @@ GLfloat colors[] = {1,1,1,
 		    0,1,1,        
 		    0,1,0,            
 		    0,0,0};
+
+
+void keyboard(unsigned char touche,int x,int y) {
+  switch (touche){
+    case 'z' :
+    rcx += 2.0f;
+    break;
+    case 's' :
+    rcx -= 2.0f;
+    break;
+    case 'q' :
+    rcy += 2.0f; 
+    break;
+    case 'd' :
+    rcy -= 2.0f; 
+    break;
+    case 'a' :
+    rcz += 2.0f; 
+    break;
+    case 'e' :
+    rcz -= 2.0f; 
+    break;
+
+  }
+}
 
 
 /* fonction d'initialisation */
@@ -68,7 +98,15 @@ void DrawGLScene()
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// on vide les buffers 
   glLoadIdentity();				// on initialise avec la matrice identité
 
-  glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond	        
+    gluLookAt(  0.0f, 0.0f, 10.0f,
+          0.0f, 0.0f,  0.0f,
+          0.0f, 1.0f,  0.0f);
+  
+  glRotatef(rcy,0.0f,1.0f,0.0f);    // on fait tourner la scène sur l'axe des Y
+  glRotatef(rcx,1.0f,0.0f,0.0f);
+  glRotatef(rcz,0.0f,0.0f,1.0f); 
+
+  //glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond	        
    
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);  
@@ -121,6 +159,8 @@ int main(int argc, char **argv)
      souris => MouseFunc(void (*func)(int button, int state, int x, int y));
      en fonction du temps => glutTimerFunc(unsigned int msecs, void (*func)(int value), value);
   */
+
+  glutKeyboardFunc(keyboard); 
   /* en cas de redimensionnement */
   glutReshapeFunc(&ReSizeGLScene);
   

@@ -149,7 +149,7 @@ int main(int argc, char **argv)
      mouvement de la sourie => void glutMotionFunc(void (*fonct)(int x,int y));
   */
 
-  glutKeyboardFunc(glutDestroyWindow(window)('q',0,0));
+  //glutKeyboardFunc(glutDestroyWindow(window)('q',0,0));
 
   /* en cas de redimensionnement */
   glutReshapeFunc(&ReSizeGLScene);

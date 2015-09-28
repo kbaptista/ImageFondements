@@ -2,7 +2,7 @@ CC = gcc
 CCFLAGS = -Wall -std=c99
 LIBS =  -lm -lGL -lglut -lGLU -ltiff -lgsl -lgslcblas -lGLEW 
 
-TARGET= exo1-1-tableaux-vertex gsl_matrix
+TARGET= exo1-1 gsl_matrix
 
 all : $(TARGET)
 	cd .

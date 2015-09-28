@@ -6,7 +6,7 @@
 
 int window; 
 
-/* angle de rotation pour notre carre */
+/* angle de rotation du monde */
 float rcx = 0.0f;
 float rcy = 0.0f;
 
@@ -14,54 +14,53 @@ float rcy = 0.0f;
 //Coordonnés de la caméra
 float x = 0.0f;
 float z = 5.0f;
+
 //Direction de la caméra
 float lx = 0.0f;
 float ly = 0.0f;
 float lz = -1.0f;
+
 //angle de la camera
 float anglex = 0.0f;
 float angley = 0.0f;
+
 //changement d'angle de la camera
 float deltaAnglex = 0.0f;
 float deltaAngley = 0.0f;
+
 int xOrigin = -1;
 int yOrigin = -1;
 
 
 
 void translate(GLfloat * vertices, int vertices_length, GLfloat * move ); 
-void mouse(int button,int state,int x,int y) { //détecte qu'un bouton est appuyé
+void mouse(int button, int state, int x, int y) { //détecte qu'un bouton est appuyé
 
   if (button == GLUT_LEFT_BUTTON) {
 
     if (state == GLUT_UP) {
-      anglex += deltaAnglex;
-      angley += deltaAngley;
+      printf("x=%f ; y=%f\n", anglex, angley);
       xOrigin = -1;
       yOrigin = -1;
     }
     else  {
+      anglex += deltaAnglex;
+      angley += deltaAngley;
       xOrigin = x;
       yOrigin = y;
     }
   }
 }
 
-void mousemotion(int x,int y){ //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
+void mousemotion(int x, int y){ //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
   if (xOrigin >= 0) {
-    deltaAnglex = (x- xOrigin)*0.001f;
-/*
-    lx = -sin(anglex + deltaAnglex);
-    lz = -cos(anglex + deltaAnglex);*/
-    
+    deltaAnglex = (x - xOrigin)*0.01f;
+    anglex += deltaAnglex;
   }
   if (yOrigin >=0) {
 
-    deltaAngley = (y - yOrigin)*0.001f;
-    /*
-    ly = sin(angley + deltaAngley);
-    lz = -cos(angley + deltaAngley);*/
-
+    deltaAngley = (y - yOrigin)*0.01f;
+    angley += deltaAngley;
   }
 }
 
@@ -160,6 +159,9 @@ void DrawFigures(){
     
   translate(square_vertices, 24, move_square);
   translate(triangle_vertices, 12, move_triangle);
+  
+  glRotatef(anglex, 1.0f, 0.0f, 0.0f);
+  glRotatef(angley, 0.0f, 1.0f, 0.0f);
 
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -174,6 +176,8 @@ void DrawFigures(){
 
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
+
+  deltaAngley = deltaAnglex = 0.0f;
 }
 
 /* dessin de la scène */
@@ -181,67 +185,17 @@ void DrawGLScene()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// on vide les buffers 
   glLoadIdentity();				// on initialise avec la matrice identité
-
-  gluLookAt(  x, 1.0f, z,
-          x+lx, 1.0f+ly,  z+lz,
-          0.0f, 1.0f,  0.0f);
-
 /*
-
-  float cosx = cos(anglex) ;
-  float cosy = cos(angley) ;
-  float sinx = sin(anglex) ;
-  float siny = sin(angley) ;
-
-  glMatrixMode(GL_MODELVIEW);
-  float cameracoord [] = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f,    z,
-    0.0f, 0.0f, 0.0f, 1.0f,
-  };
-  float comeback [] = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    0.0f, 0.0f, 1.0f,   -z,
-    0.0f, 0.0f, 0.0f, 1.0f,
-  };
-  float rotationY [] = {
-    cosx, 0.0f, sinx, 0.0f,
-    0.0f, 1.0f, 0.0f, 0.0f,
-    -sinx, 0.0f, cosx, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f,
-  };
-  float rotationX [] = {
-    1.0f, 0.0f, 0.0f, 0.0f,
-    0.0f, cosy, -siny, 0.0f,
-    0.0f, siny, cosy, 0.0f,
-    0.0f, 0.0f, 0.0f, 1.0f,
-  };
-
-  glMultMatrixf(cameracoord);
-  glMultMatrixf(rotationY);
-  glMultMatrixf(rotationX);
-  glRotatef(anglex+deltaAnglex, lx, ly, lz);
-  glRotatef(angley+deltaAngley, lx, ly, lz);
-  glMultMatrixf(comeback);
-
-  // Set the camera
-  gluLookAt(  x, 1.0f, z,
-            x+lx, 1.0f+ly,  z+lz,
-            0.0f, 1.0f,  0.0f);
-  glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
-	
-  glRotatef(rcy,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
-  glRotatef(rcx,1.0f,0.0f,0.0f);		// on fait tourner la scène sur l'axe des X
-
+  glRotatef(rcx,1.0f,0.0f,0.0f);    // on fait tourner la scène sur l'axe des X
+  glRotatef(rcy,0.0f,1.0f,0.0f);    // on fait tourner la scène sur l'axe des Y
   */
+  // Set the camera
+  gluLookAt(0.0f, 0.0f, 10.0f,
+            0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f,  0.0f);
 
   DrawFigures();
 
-/*
-  glColor3f ( 1.0f, 1.0f, 1.0f);
-*/
   glEnd();
  
   glLoadIdentity();				// on ré initialise le point de vue de la scène
@@ -296,7 +250,7 @@ int main(int argc, char **argv)
   /* fullscreen */
   /* glutFullScreen(); */
 
-  /* même sans événements, on va re dessiné la scène */
+  /* même sans événements, on va re dessiner la scène */
   glutIdleFunc(&DrawGLScene);
 
   /* les autres fonctions, gérant les événements :

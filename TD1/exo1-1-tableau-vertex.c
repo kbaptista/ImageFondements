@@ -12,9 +12,24 @@ float rcy = 0.0f;
 
 
 void mouse(int button,int state,int x,int y) ; //détecte qu'un bouton est appuyé
+{
 
-void mousemotion(int x,int y) ; //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
-void keyboard(unsigned char touche,int x,int y) ;
+}
+
+void mousemotion(int x,int y) //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
+{
+
+}
+
+void keyboard(unsigned char touche,int x,int y) {
+  switch (touche){
+    case 'q' :
+    case 'Q' :
+    case 27  : // Touche ESC
+      exit (0);
+      break;
+  }
+}
 
 /* fonction d'initialisation */
 void InitGL(int Width, int Height)
@@ -55,8 +70,8 @@ void DrawGLScene()
 
   glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
 	
-  glRotatef(rcy,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
   glRotatef(rcx,1.0f,0.0f,0.0f);		// on fait tourner la scène sur l'axe des X
+  glRotatef(rcy,0.0f,1.0f,0.0f);    // on fait tourner la scène sur l'axe des Y
 
   GLfloat vertices [] = {
     -1.0f, 1.0f, 1.0f,
@@ -149,7 +164,9 @@ int main(int argc, char **argv)
      mouvement de la sourie => void glutMotionFunc(void (*fonct)(int x,int y));
   */
 
-  glutKeyboardFunc(glutDestroyWindow(window)('q',0,0));
+  glutKeyboardFunc(keyboard); 
+  glutMouseFunc(mouse);
+  glutMotionFunc(mousemotion);
 
   /* en cas de redimensionnement */
   glutReshapeFunc(&ReSizeGLScene);

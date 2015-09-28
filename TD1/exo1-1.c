@@ -54,6 +54,7 @@ void mouse(int button, int state, int x, int y) { //détecte qu'un bouton est ap
 
 void mousemotion(int x, int y){ //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
   if (xOrigin >= 0) {
+<<<<<<< HEAD
     deltaAnglex = (x - xOrigin)*0.01f;
     anglex += deltaAnglex;
   }
@@ -61,6 +62,21 @@ void mousemotion(int x, int y){ //calcul et applique le déplacement (x et y son
 
     deltaAngley = (y - yOrigin)*0.01f;
     angley += deltaAngley;
+=======
+    deltaAnglex = (x- xOrigin)*0.001f;
+
+    lx = -sin(anglex + deltaAnglex);
+    lz = -cos(anglex + deltaAnglex);
+    
+  }
+  if (yOrigin >=0) {
+
+    deltaAngley = (y - yOrigin)*0.001f;
+    
+    ly = sin(angley + deltaAngley);
+    lz = -cos(angley + deltaAngley);
+
+>>>>>>> 035eb4fbdbe1b0844723cc3042ae3bcb11e5cacb
   }
 }
 
@@ -193,6 +209,16 @@ void DrawGLScene()
   gluLookAt(0.0f, 0.0f, 10.0f,
             0.0f, 0.0f, 0.0f,
             0.0f, 1.0f,  0.0f);
+<<<<<<< HEAD
+=======
+  */
+  glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
+	
+  //glRotatef(rcy,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
+  //glRotatef(rcx,1.0f,0.0f,0.0f);		// on fait tourner la scène sur l'axe des X
+
+  
+>>>>>>> 035eb4fbdbe1b0844723cc3042ae3bcb11e5cacb
 
   DrawFigures();
 

@@ -43,4 +43,7 @@ quaternion_inverse(quaternion q);
 quaternion
 quaternion_normalize(quaternion q);
 
+void
+quaternion_to_matrix(quaternion q, double *res);
+
 #endif

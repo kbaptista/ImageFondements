@@ -1,9 +1,13 @@
 #include <GL/glut.h>    // GLUT Library 
 #include <GL/gl.h>	// OpenGL32 Library
 #include <GL/glu.h>	// GLu32 Library
+#include "./quaternion/quaternion.h"
+
 
 int window; 
 
+quaternion q;
+quaternion qc;
 
 float rcx = 0.0f;
 float rcy = 0.0f;
@@ -35,15 +39,36 @@ GLfloat colors[] = {1,1,1,
 		    0,1,0,            
 		    0,0,0};
 
+double rotation_matrix [16];
+
+void rotation(){
+  double w = q.w;
+  double x = q.V.dx;
+  double y = q.V.dy;
+  double z = q.V.dz;
+  double this [16] =  {
+    1.0-2*(y*y + z*z), 2 *(x*y - w*z), 2*(x*z + w*y), 0.0,
+    2*(x*y + w*z), 1.0-2*(x*x + z*z),  2*(y*z - w*x), 0.0,
+    2*(x*z - w*y), 2 *(x*y + w*z), 1.0-2*(y*y + x*x), 0.0,
+        0.0,              0.0,            0.0,        1.0,
+  };
+
+  
+}
 
 void keyboard(unsigned char touche,int x,int y) {
   switch (touche){
     case 'z' :
-    rcx += 2.0f;
+    /***** rcx += 2.0f; *****/
+    quaternion_init(&q, cos(M_PI/2), sin(M_PI/2), 0.0, 0.0);
+    qc = quaternion_inverse(q);
+    rotation();
     break;
+
     case 's' :
     rcx -= 2.0f;
     break;
+
     case 'q' :
     rcy += 2.0f; 
     break;
@@ -58,7 +83,9 @@ void keyboard(unsigned char touche,int x,int y) {
     break;
 
   }
+  printf("rcx = %f, rcy = %f, rcz = %f\n",rcx, rcy, rcz );
 }
+
 
 
 /* fonction d'initialisation */
@@ -75,6 +102,7 @@ void InitGL(int Width, int Height)
   gluPerspective(45.0f,(GLfloat)Width/(GLfloat)Height,0.1f,100.0f);	// calcul de l'aspect ratio de la fenêtre 
 
   glMatrixMode(GL_MODELVIEW); // on passe en mode 'vue'
+
 }
 
 /* en cas de redimensionnement */
@@ -95,19 +123,26 @@ void ReSizeGLScene(int Width, int Height)
 /* dessin de la scène */
 void DrawGLScene()
 {
+  rotation_matrix = 
+{
+  1.0, 0.0, 0.0, 0.0,
+  0.0, 1.0, 0.0, 0.0,
+  0.0, 0.0, 1.0, 0.0,
+  0.0, 0.0, 0.0, 1.0,
+};
+
+
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// on vide les buffers 
   glLoadIdentity();				// on initialise avec la matrice identité
+  glMatrixMode(GL_MODELVIEW);
+  glMultMAtrix(rotation_matrix);
 
-    gluLookAt(  0.0f, 0.0f, 10.0f,
-          0.0f, 0.0f,  0.0f,
-          0.0f, 1.0f,  0.0f);
+  gluLookAt(  0.0f, 0.0f, 10.0f,
+              0.0f, 0.0f,  0.0f,
+              0.0f, 1.0f,  0.0f);
+
   
-  glRotatef(rcy,0.0f,1.0f,0.0f);    // on fait tourner la scène sur l'axe des Y
-  glRotatef(rcx,1.0f,0.0f,0.0f);
-  glRotatef(rcz,0.0f,0.0f,1.0f); 
-
-  //glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond	        
-   
+  
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);  
   glColorPointer(3, GL_FLOAT, 0, colors);

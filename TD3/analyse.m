@@ -4,8 +4,8 @@ function analyse(nom_fichier)
   %Partie 2
   
   [I, ngmax] = imload(nom_fichier);
-  
-  I = I /256;
+  ngmax
+  I = I /ngmax;
  
   if mean(mean(I)) >= 0.5
     I = 1-I;
@@ -13,19 +13,60 @@ function analyse(nom_fichier)
   
   %Partie 3
   
+  
   li = rows(I)
   co = columns(I)
   
-  s   = sum(sum(I))
+  s = 0;
+  for i = 1:li
+    for j= 1: co
+      s = s + I(i,j);
+      endfor
+  endfor
+  s
   
-  mi  = (sum(sum(I))*li)
-  mj  = (sum(sum(I))*co)
+  mi=0;
+  for i = 1:li
+    for j= 1: co
+      mi = mi + I(i,j)*i;
+      endfor
+  endfor
+  mi  = mi/s
+  
+  mj=0;
+  for i= 1:li
+    for j =1: co
+      mj = mj + I(i,j)*j;
+      endfor
+  endfor
+  mj  = mj/s
+  
+  sii=0;
+  for i =1:li
+    for j =1: co
+      sii = sii + I(i,j)*(i-mi)*(i-mi);
+      endfor
+  endfor
+  sii = sii/s    
   
   
-  sii = (sum(sum(I))*(li-mi)*(li-mi))
-  sij = (sum(sum(I))*(li-mi)*(co-mj))
+  sij=0;
+  for i= 1:li
+    for j= 1: co
+      sij = sij+I(i,j)*(i-mi)*(j-mj);
+      endfor
+  endfor
+  sij = sij/s
+  
   sji = sij
-  sjj = (sum(sum(I))*(co-mj)*(co-mj))
+  
+  sjj=0;
+  for i =1:li
+    for j= 1: co
+      sjj = sjj + I(i,j)*(co-mj)*(co-mj);
+      endfor
+  endfor
+  sjj=sjj/s
   
   %Partie 4
   

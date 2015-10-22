@@ -81,8 +81,27 @@ quaternion_normalize(quaternion q)
   quaternion res;
   double module=quaternion_module(q);  
   
+  quaternion_display(res);
+  printf("\n");
   quaternion_init(&res,q.w/module,q.V.dx/module,q.V.dy/module,q.V.dz/module);
-  
+  quaternion_display(res);
   return res;
   
+}
+
+void
+quaternion_to_matrix(quaternion q, double * res)
+{
+  double w = q.w;
+  double x = q.V.dx;
+  double y = q.V.dy;
+  double z = q.V.dz;
+  double this [16] = {
+    1.0-2*(y*y + z*z), 2 *(x*y - w*z), 2*(x*z + w*y), 0.0,
+    2*(x*y + w*z), 1.0-2*(x*x + z*z),  2*(y*z - w*x), 0.0,
+    2*(x*z - w*y), 2 *(x*y + w*z), 1.0-2*(y*y + x*x), 0.0,
+        0.0,              0.0,            0.0,        1.0,
+  };
+
+  res = this ;
 }

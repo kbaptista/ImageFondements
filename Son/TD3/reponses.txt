@@ -1,0 +1,10 @@
+// Exercice 1
+
+1°)	Précision Temporelle : 100 ms 
+	Résolution Fréquentielle : plus on prend un long échantillon, plus on aura un pic fin, mais on risque d'avoir plusieurs touches. -->  100 ms assurent "l'unité" de la note.
+
+2°) 7 pics de fréquences, il y a donc des fréquences communes entre les touches. C'est la combinaison des 		deux fréquences qui rend chaque touche unique.
+	
+3°) 2 pics mini/maxi --> 200 ms pour s'assurer de "finesse" du résultat.
+
+4°) 

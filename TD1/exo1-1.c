@@ -44,8 +44,6 @@ void mouse(int button, int state, int x, int y) { //détecte qu'un bouton est ap
       yOrigin = -1;
     }
     else  {
-      anglex += deltaAnglex;
-      angley += deltaAngley;
       xOrigin = x;
       yOrigin = y;
     }
@@ -54,29 +52,21 @@ void mouse(int button, int state, int x, int y) { //détecte qu'un bouton est ap
 
 void mousemotion(int x, int y){ //calcul et applique le déplacement (x et y sont les positions de la souris dans la fenêtre au moment de l'appel de la fonction.)
   if (xOrigin >= 0) {
-<<<<<<< HEAD
     deltaAnglex = (x - xOrigin)*0.01f;
-    anglex += deltaAnglex;
-  }
-  if (yOrigin >=0) {
-
     deltaAngley = (y - yOrigin)*0.01f;
+
+    anglex += deltaAnglex;
     angley += deltaAngley;
-=======
-    deltaAnglex = (x- xOrigin)*0.001f;
 
-    lx = -sin(anglex + deltaAnglex);
-    lz = -cos(anglex + deltaAnglex);
+    if (anglex<-360)
+      anglex += 360.0;
+    if (anglex>360)
+      anglex-=360.0;
     
-  }
-  if (yOrigin >=0) {
-
-    deltaAngley = (y - yOrigin)*0.001f;
-    
-    ly = sin(angley + deltaAngley);
-    lz = -cos(angley + deltaAngley);
-
->>>>>>> 035eb4fbdbe1b0844723cc3042ae3bcb11e5cacb
+    if (angley<-360)
+      angley += 360.0;
+    if (angley>360)
+      angley-=360.0;
   }
 }
 
@@ -146,14 +136,14 @@ void DrawFigures(){
 
   GLfloat triangle_vertices [] = {
      0.0f, 1.0f, 0.0f,
-    -0.6f,-1.0f, 0.6f,
-     0.6f,-1.0f, 0.6f,
-     0.0f,-1.0f,-0.6f,
+    -1.0f,-1.0f, 1.0f,
+     1.0f,-1.0f, 1.0f,
+     0.0f,-1.0f,-1.0f,
   };
 
   GLubyte triangle_indices [] = {
     0,1,2,
-    0,1,2,
+    0,1,3,
     0,2,3,
     1,2,3,
   };
@@ -169,15 +159,14 @@ void DrawFigures(){
     0.5f, 0.0f, 1.0f,
   };
 
-  GLfloat move_square [] = {-2.0f, -2.0f, .0f};
-  GLfloat move_triangle [] = {2.0f, -2.0f, .0f};
+  /* on déplace les coordonnées pour qu'elles ne soient plus centrées à l'origine */
+  GLfloat move_square [] = {2.0f, -2.0f, 2.0f};
+  GLfloat move_triangle [] = {2.0f, -2.0f, -2.0f};
   
     
   translate(square_vertices, 24, move_square);
   translate(triangle_vertices, 12, move_triangle);
-  
-  glRotatef(anglex, 1.0f, 0.0f, 0.0f);
-  glRotatef(angley, 0.0f, 1.0f, 0.0f);
+
 
   glEnableClientState(GL_COLOR_ARRAY);
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -192,6 +181,32 @@ void DrawFigures(){
 
   glDisableClientState(GL_COLOR_ARRAY);
   glDisableClientState(GL_VERTEX_ARRAY);
+
+  /***** symétrie par rapport à z0y *****/
+
+  /* on déplace les coordonnées pour qu'elles soient  symétriques par rapport à z0y */
+  GLfloat move_square_sym [] = {-4.0f, .0f, .0f};
+  GLfloat move_triangle_sym [] = {-4.0f, .0f, .0f};
+    
+  translate(square_vertices, 24, move_square_sym);
+  translate(triangle_vertices, 12, move_triangle_sym);
+
+
+  glEnableClientState(GL_COLOR_ARRAY);
+  glEnableClientState(GL_VERTEX_ARRAY);
+
+  glColorPointer(3, GL_FLOAT, 0, colors);
+  glVertexPointer(3, GL_FLOAT, 0, square_vertices);
+  glDrawElements(GL_QUADS, 24, GL_UNSIGNED_BYTE, square_indices);
+
+  glColorPointer(3, GL_FLOAT, 0, colors);
+  glVertexPointer(3, GL_FLOAT, 0, triangle_vertices);
+  glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, triangle_indices);
+
+  glDisableClientState(GL_COLOR_ARRAY);
+  glDisableClientState(GL_VERTEX_ARRAY);
+
+
 
   deltaAngley = deltaAnglex = 0.0f;
 }
@@ -209,16 +224,11 @@ void DrawGLScene()
   gluLookAt(0.0f, 0.0f, 10.0f,
             0.0f, 0.0f, 0.0f,
             0.0f, 1.0f,  0.0f);
-<<<<<<< HEAD
-=======
-  */
-  glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
-	
-  //glRotatef(rcy,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
-  //glRotatef(rcx,1.0f,0.0f,0.0f);		// on fait tourner la scène sur l'axe des X
 
-  
->>>>>>> 035eb4fbdbe1b0844723cc3042ae3bcb11e5cacb
+  //glTranslatef(0.0f,0.0f,-10.0f);		// on translate la scène vers le fond
+	
+  glRotatef(angley,1.0f,0.0f,0.0f);    // on fait tourner la scène sur l'axe des X
+  glRotatef(anglex,0.0f,1.0f,0.0f);		// on fait tourner la scène sur l'axe des Y
 
   DrawFigures();
 

@@ -12,7 +12,7 @@
 #define SAMPLING_RATE 44100.0
 #define CHANNELS_NUMBER 1
 #define N 4410
-#define TIME 36
+#define TIME 72
 #define real double
 
 static fftw_plan plan;

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+project( MotionTool )
+find_package( OpenCV REQUIRED )
+add_executable( motionTool main.cpp videoframes.cpp motiontools.cpp )
+target_link_libraries( motionTool ${OpenCV_LIBS} )
